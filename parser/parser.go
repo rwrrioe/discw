@@ -5,11 +5,11 @@ import (
 	"os"
 )
 
-type ParsedJSON map[string]interface{}
+type ParsedJSON []map[string]interface{}
 
 func NewParser() *Parser {
 	return &Parser{
-		JSON: make(map[string]interface{}),
+		JSON: make([]map[string]interface{}, 0),
 	}
 }
 
@@ -18,11 +18,14 @@ type Parser struct {
 }
 
 func (p *Parser) Parse(filename string) (*ParsedJSON, error) {
-	b, err := os.ReadFile(filename)
+	data, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
-
-	json.Unmarshal(b, &p.JSON)
+	var parsed []map[string]interface{}
+	if err := json.Unmarshal(data, &parsed); err != nil {
+		return nil, err
+	}
+	p.JSON = parsed
 	return &p.JSON, nil
 }

@@ -1,12 +1,12 @@
 package flattener
 
 import (
+	"log"
+
 	"github.com/rwrrioe/Discworld/parser"
 )
 
-type NestedJSON map[string]interface{}
-
-type flatJSON map[string]interface{}
+type flatJSON map[string]string
 
 type Flattener struct {
 	flatJSON flatJSON
@@ -14,54 +14,73 @@ type Flattener struct {
 
 func NewFlattener() *Flattener {
 	return &Flattener{
-		flatJSON: make(map[string]interface{}),
+		flatJSON: make(map[string]string),
 	}
 }
 
 func (n *Flattener) Flatten(filename string, key string, value string) (*flatJSON, error) {
-	parser := parser.NewParser()
-	jsonMap, err := parser.Parse(filename)
+	parsed, err := parser.NewParser().Parse(filename)
 	if err != nil {
 		return nil, err
 	}
-	wrapped := map[string]interface{}{
-		"root": *jsonMap,
+
+	log.Println("Parsed JSON:", parsed)
+	flat := make(flatJSON)
+	generic := make([]interface{}, len(*parsed))
+	for i, m := range *parsed {
+		generic[i] = m
 	}
 
-	flatJSON := FlattenJSON(wrapped, key, value)
+	FlattenJSON(generic, key, value, &flat)
+	log.Println("Flatted JSON result:", flat)
 
-	return flatJSON, nil
+	return &flat, nil
 }
 
-func FlattenJSON(json map[string]interface{}, key string, value string) *flatJSON {
-	flatJS := make(flatJSON)
-	var resultJSON map[string]interface{}
-
+func FlattenJSON(data interface{}, key string, value string, flat *flatJSON) {
 	var extract func(interface{})
-	extract = func(data interface{}) {
-		switch d := data.(type) {
+	extract = func(item interface{}) {
+		switch v := item.(type) {
 		case map[string]interface{}:
-			val, valOk := d[key]
-			txt, txtOk := d[value]
+			val, valOk := v[key]
+			txt, txtOk := v[value]
 
 			if valOk && txtOk {
-				if keyStr, ok := val.(string); ok {
-					if txtStr, ok := txt.(string); ok {
-						resultJSON[keyStr] = txtStr
-					}
+				valStr, valOk := val.(string)
+				txtStr, txtOk := txt.(string)
+
+				if valOk && txtOk {
+					(*flat)[valStr] = txtStr
+				} else {
 				}
 			}
+			for _, child := range v {
+				extract(child)
+			}
 
-			for _, v := range d {
-				extract(v)
-			}
 		case []interface{}:
-			for _, v := range d {
-				extract(v)
+			for _, child := range v {
+				extract(child)
 			}
+		default:
 		}
 	}
 
-	flatJS = flatJSON(json)
-	return &flatJS
+	switch top := data.(type) {
+	case []interface{}:
+		for _, item := range top {
+			extract(item)
+			log.Printf("Extracted from array: %+v\n", item)
+		}
+	case []map[string]interface{}:
+		for _, item := range top {
+			extract(item)
+			log.Printf("Extracted from []map: %+v\n", item)
+		}
+	default:
+		extract(data)
+		log.Printf("Extracted from default: %+v\n", data)
+	}
+	log.Println("extracted to flat", flat)
+	log.Println("end flattenJSON")
 }
