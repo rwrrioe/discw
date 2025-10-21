@@ -2,6 +2,8 @@ package parser
 
 import (
 	"encoding/json"
+	"fmt"
+	"log"
 	"os"
 )
 
@@ -23,9 +25,11 @@ func (p *Parser) Parse(filename string) (*ParsedJSON, error) {
 		return nil, err
 	}
 	var parsed []map[string]interface{}
+	log.Println("entering parser.go parse")
 	if err := json.Unmarshal(data, &parsed); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("from parser.go parse, error:%v", err)
 	}
+
 	p.JSON = parsed
 	return &p.JSON, nil
 }

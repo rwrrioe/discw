@@ -1,24 +1,13 @@
 package parser_test
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
+	"reflect"
 	"testing"
 
 	"github.com/rwrrioe/Discworld/parser"
 )
-
-func toString(m map[string]interface{}) *map[string]string {
-	strMap := make(map[string]string)
-	for k, v := range m {
-		kStr := fmt.Sprint(k)
-		vStr := fmt.Sprint(v)
-		strMap[kStr] = vStr
-	}
-
-	return &strMap
-}
 
 func TestParser(t *testing.T) {
 	toParse := `[
@@ -34,17 +23,17 @@ func TestParser(t *testing.T) {
   }
 ]`
 
-	expected := []map[string]string{
+	expected := []map[string]interface{}{
 		{
+			"Items": []interface{}{},
 			"Value": "AcceptingApplications",
 			"Text":  "Прием заявок",
-			"Items": "[]",
 		},
 
 		{
+			"Items": []interface{}{},
 			"Value": "AcceptingAppUserEnter",
 			"Text":  "Прием заявок; Регистрация участников в аукционном зале",
-			"Items": "[]",
 		},
 	}
 
@@ -59,9 +48,10 @@ func TestParser(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	for k, v := range expected {
-		if toString((*parsed)[k]) != &v {
-			t.Errorf("Expected %v -> %s, got %s", k, v, (*parsed)[k])
-		}
+	convertMap := []map[string]interface{}(*parsed)
+	if !reflect.DeepEqual(convertMap, expected) {
+		t.Errorf("Expected: %v, got %v", expected, *parsed)
+		t.Logf("Parsed value %#v", parsed)
+		t.Logf("Expected value %#v", expected)
 	}
 }
