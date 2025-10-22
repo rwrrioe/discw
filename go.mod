@@ -1,3 +1,3 @@
-module github.com/rwrrioe/Discworld
+module github.com/rwrrioe/discw
 
-go 1.25.1
+go 1.25.3

@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/rwrrioe/diskw/parser"
+	"github.com/rwrrioe/discw/parser"
 )
 
 type flatJSON map[string]string

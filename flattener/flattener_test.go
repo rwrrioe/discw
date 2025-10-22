@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/rwrrioe/diskw/flattener"
+	"github.com/rwrrioe/discw/flattener"
 )
 
 func TestFlattenerArray(t *testing.T) {
