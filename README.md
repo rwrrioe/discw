@@ -1,5 +1,5 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/rwrrioe/Discworld)](https://goreportcard.com/report/github.com/rwrrioe/Discworld)
-
+ [![Go Reference](https://pkg.go.dev/badge/github.com/rwrrioe/diskw.svg)](https://pkg.go.dev/github.com/rwrrioe/diskw)
 # Discworld (diskw)
 
 **Discworld (diskw)** is a CLI tool and a lightweight Go library that converts nested JSON **dictionaries** (objects containing key→value pairs) into a single-level **flat key‑value Go map** (`map[string]interface{}`).
