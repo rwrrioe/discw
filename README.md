@@ -1,6 +1,7 @@
-# Discworld (diskw)
 
-**Discworld (diskw)** is a CLI tool and a lightweight Go library that converts nested JSON **dictionaries** (objects containing key→value pairs) into a single-level **flat key‑value Go map** (`map[string]interface{}`).
+# Discworld (discw)
+
+**Discworld (discw)** is a CLI tool and a lightweight Go library that converts nested JSON **dictionaries** (objects containing key→value pairs) into a single-level **flat key‑value Go map** (`map[string]interface{}`).
 
 The core idea: if your JSON is built from dictionaries (objects) where every node is a set of key→value pairs, Discworld will produce a flat map where each key is a path describing the nesting and the value is the original leaf value. This makes backend mapping and data normalization straightforward — you supply keys and values, give the tool the object, and it returns a flat map automatically.
 
@@ -26,19 +27,19 @@ The core idea: if your JSON is built from dictionaries (objects) where every nod
 
 ### CLI
 ```bash
-go install github.com/you/diskw/cmd/diskw@latest
+go install github.com/you/diskw/cmd/discw@latest
 ```
 
 ### Library
 ```bash
-go get github.com/you/diskw@latest
+go get github.com/you/discw@latest
 ```
 
 ---
 
 ## CLI usage
 ```
-diskw -i input.json -o output.json
+discw -i input.json -o output.json
 ```
 
 Common options:
