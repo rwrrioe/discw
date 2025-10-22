@@ -1,9 +1,12 @@
 package flattener
 
 import (
+	"encoding/json"
+	"io"
 	"log"
+	"os"
 
-	"github.com/rwrrioe/Discworld/parser"
+	"github.com/rwrrioe/diskw/parser"
 )
 
 type flatJSON map[string]string
@@ -19,15 +22,15 @@ func NewFlattener() *Flattener {
 }
 
 func (n *Flattener) Flatten(filename string, key string, value string) (*flatJSON, error) {
-	parsed, err := parser.NewParser().Parse(filename)
+	p, err := parser.NewParser().Parse(filename)
 	if err != nil {
 		return nil, err
 	}
 
-	log.Println("Parsed JSON:", parsed)
+	log.Println("Parsed JSON:", p)
 	flat := make(flatJSON)
-	generic := make([]interface{}, len(*parsed))
-	for i, m := range *parsed {
+	generic := make([]interface{}, len(*p))
+	for i, m := range *p {
 		generic[i] = m
 	}
 
@@ -35,6 +38,53 @@ func (n *Flattener) Flatten(filename string, key string, value string) (*flatJSO
 	log.Println("Flatted JSON result:", flat)
 
 	return &flat, nil
+}
+
+func (n *Flattener) FlattenTo(parsefile string, key string, value string, writer io.Writer) error {
+	p, err := parser.NewParser().Parse(parsefile)
+	if err != nil {
+		return err
+	}
+
+	flat := make(flatJSON)
+	generic := make([]interface{}, len(*p))
+	for i, m := range *p {
+		generic[i] = m
+	}
+
+	FlattenJSON(generic, key, value, &flat)
+	if err := json.NewEncoder(writer).Encode(&flat); err != nil {
+		return nil
+	}
+
+	return nil
+}
+
+func (n *Flattener) FlattenToFile(filename string, parsefile string, key string, value string) error {
+	file, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE, 0644)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	p, err := parser.NewParser().Parse(parsefile)
+	if err != nil {
+		return err
+	}
+
+	flat := make(flatJSON)
+	generic := make([]interface{}, len(*p))
+	for i, m := range *p {
+		generic[i] = m
+	}
+
+	FlattenJSON(generic, key, value, &flat)
+
+	FlattenJSON(generic, key, value, &flat)
+	if err := json.NewEncoder(file).Encode(&flat); err != nil {
+		return nil
+	}
+	return nil
 }
 
 func FlattenJSON(data interface{}, key string, value string, flat *flatJSON) {

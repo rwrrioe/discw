@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/rwrrioe/Discworld/parser"
+	"github.com/rwrrioe/diskw/parser"
 )
 
 func TestParser(t *testing.T) {
